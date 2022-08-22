@@ -1,3 +1,5 @@
+import sys
+
 from utils import get_list_of_folders
 import  os
 
@@ -14,8 +16,11 @@ def main():
     same proces is repeated fo the niff folder, but only select secenses get copied
     :return:
     """
-    origin_path = "/home/davidhieber/Documents/Leucoexpert/test_folder_mris/orgin"
-    target_path = "/home/davidhieber/Documents/Leucoexpert/test_folder_mris/target"
+    #origin_path = "/home/davidhieber/Documents/Leucoexpert/test_folder_mris/orgin"
+    #target_path = "/home/davidhieber/Documents/Leucoexpert/test_folder_mris/target"
+    origin_path = sys.argv[1]
+    target_path = sys.argv[2]
+
     # create the dicom and nifti folder in the target folder if they do not exist
     if not os.path.exists(target_path + "/dicom"):
         os.mkdir(target_path + "/dicom")
@@ -31,11 +36,13 @@ def main():
             os.mkdir(target_path + "/nifti/" + patient_folder)
 
     number_dicoms = 0
-    number_nifti = 0
     # for every patient folder in the origin folder get the list of sub folder names, create a list of iso formatted dates
     for patient_folder in patient_folders:
         record_dates = get_list_of_folders(origin_path + "/" + patient_folder)
         for record_date in record_dates:
+            # check if the recorde date containes a dicom study
+            if not os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/dicom"):
+                continue
             record_date = record_date.split("/")[-1]
             #remove all characters that are not numbers  from te sub folder name
             record_date_iso = record_date.replace(" ", "")
@@ -51,25 +58,60 @@ def main():
                 print(f"not a valid date {patient_folder}/{record_date}")
                 continue
             # convert to iso formatted date
-            record_date_iso = record_date[:4] + "-" + record_date[4:6] + "-" + record_date[6:8]
-
-
+            record_date_iso = record_date_iso[:4] + "-" + record_date_iso[4:6] + "-" + record_date_iso[6:8]
             # create a new folder with the iso formatted date as name in the patient folder of the target folder
             if not os.path.exists(target_path + "/dicom/" + patient_folder + "/" + record_date_iso):
                 os.mkdir(target_path + "/dicom/" + patient_folder + "/" + record_date_iso)
             # check if the recorde date containes a dicom study
-
-            if os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/dicom"):
                 # copy the dicom folder to the new folder
                # check the os system and copy the dicom folder to the new folder
-                if os.name == "nt":
-                    os.system(f"copy {origin_path}/{patient_folder}/{record_date}/dicom {target_path}/dicom/{patient_folder}/{record_date_iso}  /E/H")
-                else:
-                    os.system(f"cp -r {origin_path}/{patient_folder}/{record_date}/dicom {target_path}/dicom/{patient_folder}/{record_date_iso}")
-                number_dicoms += 1
-    print(f"{number_dicoms} dicoms copied")
-    print(f"{number_nifti} nifti copied")
+            if os.name == "nt":
+                os.system(f"copy {origin_path}/{patient_folder}/{record_date}/dicom {target_path}/dicom/{patient_folder}/{record_date_iso}  /E/H")
+            else:
+                os.system(f"cp -r {origin_path}/{patient_folder}/{record_date}/dicom {target_path}/dicom/{patient_folder}/{record_date_iso}")
+            number_dicoms += 1
+    list_niftis = ["T2ax.nii", "t1_3d.nii", "flair_ax.nii"]
+    niffis_count = { "T2ax.nii":0, "t1_3d.nii":0, "flair_ax.nii":0}
+    for patient_folder in patient_folders:
+        record_dates = get_list_of_folders(origin_path + "/" + patient_folder)
+        for record_date in record_dates:
+            for nifti in list_niftis:
+                # check if the recorde date containes a nifti
+                if not os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/" + nifti):
+                    continue
 
+                record_date = record_date.split("/")[-1]
+                #remove all characters that are not numbers  from te sub folder name
+                record_date_iso = record_date.replace(" ", "")
+                record_date_iso = record_date_iso.replace("-", "")
+                record_date_iso = record_date_iso.replace(":", "")
+                record_date_iso = record_date_iso.replace(".", "")
+                #check if record_date is a valid date
+                if not record_date_iso.isnumeric():
+                    print(f"not a valid date  {patient_folder}/{record_date}")
+                    continue
+                # check if the recorde date is a valid date
+                if not (1900 < int(record_date_iso[:4]) < 2100 and 1 <= int(record_date_iso[4:6]) <= 12 and 1 <= int(record_date_iso[6:8]) <= 31):
+                    print(f"not a valid date {patient_folder}/{record_date}")
+                    continue
+                # convert to iso formatted date
+                record_date_iso = record_date_iso[:4] + "-" + record_date_iso[4:6] + "-" + record_date_iso[6:8]
+
+                # create a new folder with the iso formatted date as name in the patient folder of the target folder
+                if not os.path.exists(target_path + "/nifti/" + patient_folder + "/" + record_date_iso):
+                    os.mkdir(target_path + "/nifti/" + patient_folder + "/" + record_date_iso)
+                # check if the recorde date containes a dicom study
+
+
+               # check the os system and copy the dicom folder to the new folder
+                if os.name == "nt":
+                    os.system(f"copy {origin_path}/{patient_folder}/{record_date}/{nifti} {target_path}/nifti/{patient_folder}/{record_date_iso}/{nifti} ")
+                else:
+                    os.system(f"cp {origin_path}/{patient_folder}/{record_date}/{nifti} {target_path}/nifti/{patient_folder}/{record_date_iso}")
+                niffis_count[nifti] += 1
+    print(f"{number_dicoms} dicoms copied")
+    print(f"{niffis_count} nifti copied")
+    # for nifti and dicom remove the patient folders without dicom or niftis
 
 if __name__ == '__main__':
     main()
