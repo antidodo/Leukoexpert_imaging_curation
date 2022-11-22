@@ -4,6 +4,7 @@ from utils import get_list_of_folders, mkdir_when_not_existent, make_list_of_dir
     check_if_text_is_a_date_and_output_in_isofromat
 import  os
 
+
 def main():
     """
     kuriert ->  dicom(ids(ios_datum(DICOM)))  , Niff(ids(iso_daum(Alle relvanten niffty))
@@ -20,8 +21,14 @@ def main():
     #get the path from the args
     origin_path = sys.argv[1]
     target_path = sys.argv[2]
+    if sys.argv[3] == "V":
+        verbose = True
+    else:
+        verbose = False
 
     if os.name == "nt":
+        # create the target path if they do not exist
+        mkdir_when_not_existent(target_path)
         # create the dicom and nifti folder in the target folder if they do not exist
         mkdir_when_not_existent(target_path + r"\\dicom")
         mkdir_when_not_existent(target_path + r"\\nifti")
@@ -29,7 +36,12 @@ def main():
         # create the same folders in the target folder if they do not exist
         make_list_of_dirs_in_path(target_path + r"\\dicom\\", patient_folders)
         make_list_of_dirs_in_path(target_path + r"\\nifti\\", patient_folders)
+        if verbose:
+            print(f"patient folders created {patient_folders}")
+
     else:
+        # create the target path if they do not exist
+        mkdir_when_not_existent(target_path)
         # create the dicom and nifti folder in the target folder if they do not exist
         mkdir_when_not_existent(target_path + "/dicom")
         mkdir_when_not_existent(target_path + "/nifti")
@@ -37,6 +49,8 @@ def main():
         # create the same folders in the target folder if they do not exist
         make_list_of_dirs_in_path(target_path + "/dicom/", patient_folders)
         make_list_of_dirs_in_path(target_path + "/nifti/", patient_folders)
+        if verbose:
+            print(f"patient folders created {patient_folders}")
 
     number_dicoms = 0
     # for every patient folder in the origin folder get the list of sub folder names, create a list of iso formatted dates
@@ -47,14 +61,26 @@ def main():
             record_dates = get_list_of_folders(origin_path + "/" + patient_folder)
         for record_date in record_dates:
             # check if the recorde date containes a dicom study
+            dicom_folder_name = ""
             if os.name == "nt":
-
-                if not os.path.exists(
-                        origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\dicom" ):
+                if os.path.exists(origin_path + r"\\" + patient_folder + r"\\" + record_date + "/dicom"):
+                    dicom_folder_name = "dicom"
+                if os.path.exists(origin_path + r"\\"+ patient_folder + r"\\" + record_date + "/Dicom"):
+                    dicom_folder_name = "Dicom"
+                if os.path.exists(origin_path + r"\\" + patient_folder + r"\\" + record_date + "/DICOM"):
+                    dicom_folder_name = "DICOM"
+                if dicom_folder_name == "":
                     continue
             else:
-                if not os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/dicom" ):
+                if os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/dicom"):
+                    dicom_folder_name = "dicom"
+                if os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/Dicom"):
+                    dicom_folder_name = "Dicom"
+                if os.path.exists(origin_path + "/" + patient_folder + "/" + record_date + "/DICOM"):
+                    dicom_folder_name = "DICOM"
+                if dicom_folder_name == "":
                     continue
+
             if os.name == "nt":
                 record_date = record_date.split(r"\\")[-1]
             else:
@@ -68,14 +94,20 @@ def main():
                 mkdir_when_not_existent(target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso)
             else:
                 mkdir_when_not_existent(target_path + "/dicom/" + patient_folder + "/" + record_date_iso)
-            # check if the recorde date containes a dicom study
-                # copy the dicom folder to the new folder
-               # check the os system and copy the dicom folder to the new folder
+            # check if the recorde date containes a dicom study folder either dicom or Dicom or DICOM, list folder name
+
+            # copy the dicom folder to the new folder
+            # check the os system and copy the dicom folder to the new folder
             if os.name == "nt":
-                os.system(r"copy " + origin_path + r"\\" + patient_folder+ r"\\" + record_date+r"\\dicom " +target_path+ r"/dicom/" + patient_folder+ r"\\" +record_date_iso + r" /E/H")
+                os.system(r"Copy-Item " + origin_path + r"\\" + patient_folder+ r"\\" + record_date+r"\\"+ dicom_folder_name +" " +target_path+ r"\\dicom\\" + patient_folder+ r"\\" +record_date_iso+ r"\\dicom")
+                if verbose:
+                    print(r"Copy-Item " + origin_path + r"\\" + patient_folder+ r"\\" + record_date+r"\\"+ dicom_folder_name +" " +target_path+ r"\\dicom\\" + patient_folder+ r"\\" +record_date_iso+ r"\\dicom")
             else:
-                os.system(f"cp -r {origin_path}/{patient_folder}/{record_date}/dicom {target_path}/dicom/{patient_folder}/{record_date_iso}")
+                os.system(f"cp -r {origin_path}/{patient_folder}/{record_date}/{dicom_folder_name}/ {target_path}/dicom/{patient_folder}/{record_date_iso}/dicom")
+                if verbose:
+                    print(f"cp -r {origin_path}/{patient_folder}/{record_date}/{dicom_folder_name}/ {target_path}/dicom/{patient_folder}/{record_date_iso}/dicom")
             number_dicoms += 1
+
     list_niftis = ["T2ax.nii", "t1_3d.nii", "flair_ax.nii"]
     niffis_count = { "T2ax.nii":0, "t1_3d.nii":0, "flair_ax.nii":0}
     for patient_folder in patient_folders:
