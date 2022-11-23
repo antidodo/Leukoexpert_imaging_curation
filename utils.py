@@ -1,5 +1,6 @@
 import os
 
+
 def get_list_of_folders(path: str) -> list:
     """
     This function returns a list of all the folders in a given path.
@@ -7,6 +8,7 @@ def get_list_of_folders(path: str) -> list:
     :return:
     """
     return [f.name for f in os.scandir(path) if f.is_dir()]
+
 
 def mkdir_when_not_existent(path: str) -> None:
     """
@@ -16,6 +18,8 @@ def mkdir_when_not_existent(path: str) -> None:
     """
     if not os.path.exists(path):
         os.mkdir(path)
+
+
 def make_list_of_dirs_in_path(path: str, names: list) -> None:
     """
     This function makes a dir for every name in the list of names at the given path.
@@ -24,6 +28,20 @@ def make_list_of_dirs_in_path(path: str, names: list) -> None:
     """
     for name in names:
         mkdir_when_not_existent(path + name)
+
+
+def get_path_of_a_file_in_a_folder(path: str, file_name: str) -> str or None:
+    """
+    This function returns the path of a file in a folder or a sub folder.
+    :param path:
+    :param file_name:
+    :return:
+    """
+    for root, dirs, files in os.walk(path):
+        if file_name in files:
+            return os.path.join(root, file_name)
+    return None
+
 
 def check_if_text_is_a_date_and_output_in_isofromat(date: str) -> str:
     """
