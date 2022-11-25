@@ -101,10 +101,10 @@ def main():
             # check the os system and copy the dicom folder to the new folder
             if os.name == "nt":
                 os.system(
-                    r"Copy-Item " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + " " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom")
+                    r"xcopy   " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + "  " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom\\  /e /y")
                 if verbose:
                     print(
-                        r"Copy-Item " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + " " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom")
+                         r"xcopy   " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + "  " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom\\  /e /y")
             else:
                 os.system(
                     f"cp -r {origin_path}/{patient_folder}/{record_date}/{dicom_folder_name}/ {target_path}/dicom/{patient_folder}/{record_date_iso}/dicom")
@@ -149,7 +149,10 @@ def main():
                 # check the os system and copy the dicom folder to the new folder
                 if os.name == "nt":
                     os.system(
-                        r"copy " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + nifti + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti)
+                        r"xcopy " + nifti_path + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti + r"* /e /y")
+                    if verbose:
+                        print(
+                            r"xcopy " + nifti_path + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti + r"* /e /y")
                 else:
                     os.system(
                         f"cp {nifti_path} {target_path}/nifti/{patient_folder}/{record_date_iso}")
