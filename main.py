@@ -7,7 +7,7 @@ import os
 
 def main():
     """
-    kuriert ->  dicom(ids(ios_datum(DICOM)))  , Niff(ids(iso_daum(Alle relvanten niffty))
+    kuriert ->  dicom(ids(ios_datum(DICOM)))  , Niff(ids(iso_daum(Alle relvanten niffty)
 
     Main function for the data curation skript.
     At a spesifite path it creates tow sub folders Dicom and nif
@@ -29,6 +29,10 @@ def main():
         verbose = False
 
     if os.name == "nt":
+        if not "\\\\" in origin_path:
+            origin_path = origin_path.replace("\\","\\\\")
+        if not "\\\\" in target_path:
+            target_path = target_path.replace("\\","\\\\")
         # create the target path if they do not exist
         mkdir_when_not_existent(target_path)
         # create the dicom and nifti folder in the target folder if they do not exist
@@ -101,10 +105,10 @@ def main():
             # check the os system and copy the dicom folder to the new folder
             if os.name == "nt":
                 os.system(
-                    r"xcopy   " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + "  " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom\\  /e /y")
+                    r"xcopy   " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + "  " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom\  /e /y")
                 if verbose:
                     print(
-                         r"xcopy   " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + "  " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom\\  /e /y")
+                         r"xcopy   " + origin_path + r"\\" + patient_folder + r"\\" + record_date + r"\\" + dicom_folder_name + "  " + target_path + r"\\dicom\\" + patient_folder + r"\\" + record_date_iso + r"\\dicom\  /e /y")
             else:
                 os.system(
                     f"cp -r {origin_path}/{patient_folder}/{record_date}/{dicom_folder_name}/ {target_path}/dicom/{patient_folder}/{record_date_iso}/dicom")
@@ -149,10 +153,10 @@ def main():
                 # check the os system and copy the dicom folder to the new folder
                 if os.name == "nt":
                     os.system(
-                        r"xcopy " + nifti_path + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti + r"* /e /y")
+                        r"xcopy " + nifti_path + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti + r"*  /y")
                     if verbose:
                         print(
-                            r"xcopy " + nifti_path + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti + r"* /e /y")
+                            r"xcopy " + nifti_path + r" " + target_path + r"\\nifti\\" + patient_folder + r"\\" + record_date_iso + r"\\" + nifti + r"*  /y")
                 else:
                     os.system(
                         f"cp {nifti_path} {target_path}/nifti/{patient_folder}/{record_date_iso}")
