@@ -25,7 +25,13 @@ def main():
 
     pseudonymisation = True
     if len(sys.argv) > 3:
-        if sys.argv[3] == "V" or sys.argv[3] == "v":
+        if sys.argv[3] == "P" or sys.argv[3] == "p" or sys.argv[4] == "p" or sys.argv[4] == "P":
+            pseudonymisation = True
+    else:
+        pseudonymisation = False
+
+    if len(sys.argv) > 3:
+        if sys.argv[3] == "V" or sys.argv[3] == "v" or sys.argv[4] == "V" or sys.argv[4] == "v":
             verbose = True
     else:
         verbose = False
@@ -50,8 +56,6 @@ def main():
         mkdir_when_not_existent(target_path + "/dicom")
         mkdir_when_not_existent(target_path + "/nifti")
         patient_folders = get_list_of_folders(origin_path)
-
-
 
     patient_folders_and_pseudonyms = []
     if pseudonymisation:
