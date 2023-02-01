@@ -2,7 +2,7 @@ import sys
 import csv
 
 from utils import get_list_of_folders, mkdir_when_not_existent, make_list_of_dirs_in_path, \
-    check_if_text_is_a_date_and_output_in_isofromat, get_path_of_a_file_in_a_folder
+    check_if_text_is_a_date_and_output_in_isofromat, get_path_of_a_file_in_a_folder, create_string_with_fill_zeros
 import os
 
 
@@ -56,9 +56,13 @@ def main():
     patient_folders_and_pseudonyms = []
     if pseudonymisation:
         # create a list of patient folders and pseudonym numbers, the pseudonym number is the same as the index of the list
+
         pseudonym_number = 0
         for patient_folder  in patient_folders:
-            patient_folders_and_pseudonyms.append([patient_folder,str(pseudonym_number)])
+
+            pseudonym = create_string_with_fill_zeros(pseudonym_number, 5)
+
+            patient_folders_and_pseudonyms.append([patient_folder,pseudonym])
             pseudonym_number += 1
     else:
         # patient folders and pseudonyms are the same
@@ -66,7 +70,6 @@ def main():
         for patient_folder in patient_folders:
             patient_folders_and_pseudonyms.append([patient_folder, patient_folder])
     pseudonyms_folders = [patient_folder_and_pseudonym[1] for patient_folder_and_pseudonym in patient_folders_and_pseudonyms]
-
     if os.name == "nt":
         # create the same folders in the target folder if they do not exist
         make_list_of_dirs_in_path(target_path + r"\\dicom\\", pseudonyms_folders)
