@@ -50,23 +50,33 @@ def check_if_text_is_a_date_and_output_in_isofromat(date: str) -> str:
     :return:
     """
     # remove all characters that are not numbers  from te sub folder name
-    date_iso = date.replace(" ", "")
-    date_iso = date_iso.replace("-", "")
-    date_iso = date_iso.replace(":", "")
-    date_iso = date_iso.replace(".", "")
+    date_iso = remove_non_numeric(date)
+
     # check if record_date is numeric
-    if not date_iso.isnumeric():
+    if not date_iso.isnumeric() or len(date_iso) != 8:
         print(f"date is not numeric  {date}")
         return ""
     # check if the recorde date is a valid date
     if not (1900 < int(date_iso[:4]) < 2100 and 1 <= int(date_iso[4:6]) <= 12 and 1 <= int(
             date_iso[6:8]) <= 31):
-        print(f"not a valid date {date}")
-        return ""
+        date_iso = date_iso[:4] + date_iso[6:8] + date_iso[4:6]
+        if not (1900 < int(date_iso[:4]) < 2100 and 1 <= int(date_iso[4:6]) <= 12 and 1 <= int(
+                date_iso[6:8]) <= 31):
+            print(f"not a valid date {date}")
+            return ""
+
+
     # convert to iso formatted date
     date_iso = date_iso[:4] + "-" + date_iso[4:6] + "-" + date_iso[6:8]
     return date_iso
 
+def remove_non_numeric(text: str) -> str:
+    """
+    This function removes all non numeric characters from a string.
+    :param text:
+    :return:
+    """
+    return ''.join([i for i in text if i.isdigit()])
 
 def create_string_with_fill_zeros(number: int, length: int) -> str:
     """
