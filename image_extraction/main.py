@@ -1,5 +1,5 @@
-import sys
 import csv
+import argparse
 
 from utils import get_list_of_folders, mkdir_when_not_existent, make_list_of_dirs_in_path, \
     check_if_text_is_a_date_and_output_in_isofromat, get_path_of_a_file_in_a_folder, create_string_with_fill_zeros
@@ -19,22 +19,18 @@ def main():
     same proces is repeated fo the niff folder, but only select secenses get copied
     :return:
     """
+    parser = argparse.ArgumentParser(description='Curation of Mris')
+    parser.add_argument('-o', type=str, help='the path to the origin folder', required=True)
+    parser.add_argument('-t', type=str, help='the path to the target folder', required=True)
+    parser.add_argument('-p', type=bool, help='pseudonymisation if False the target folders get not pseudonymisation',default=True, required=False)
+    parser.add_argument('-v', type=bool, help='verbose',default=False, required=False)
+    args = parser.parse_args()
     # get the path from the args
-    origin_path = sys.argv[1]
-    target_path = sys.argv[2]
+    origin_path = args.o
+    target_path = args.t
+    pseudonymisation = args.p
+    verbose = args.v
 
-    pseudonymisation = True
-    if len(sys.argv) > 3:
-        if sys.argv[3] == "P" or sys.argv[3] == "p" or sys.argv[4] == "p" or sys.argv[4] == "P":
-            pseudonymisation = True
-    else:
-        pseudonymisation = False
-
-    if len(sys.argv) > 3:
-        if sys.argv[3] == "V" or sys.argv[3] == "v" or sys.argv[4] == "V" or sys.argv[4] == "v":
-            verbose = True
-    else:
-        verbose = False
 
     if os.name == "nt":
         if not "\\\\" in origin_path:
