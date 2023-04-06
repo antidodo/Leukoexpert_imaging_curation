@@ -1,4 +1,4 @@
-import sys
+import argparse
 
 
 def main():
@@ -13,19 +13,20 @@ def main():
 
     :return:
     """
-    # get path from command line
-    # or hardcode it
-    #origin_path = sys.argv[1]
-    #target_path = sys.argv[2]
-    origion_path = "/"
-    target_path = "/"
-
-    if len(sys.argv) > 3:
-        if sys.argv[3] == "V" or sys.argv[3] == "v":
-            verbose = True
-    else:
-        verbose = False
+    parser = argparse.ArgumentParser(description='Curation of Mris')
+    parser.add_argument('-o', type=str, help='the path to the origin folder', required=True)
+    parser.add_argument('-t', type=str, help='the path to the target folder', required=True)
+    parser.add_argument('-v', type=bool, help='verbose', default=False, required=False)
 
 
+    args = parser.parse_args()
+    origin_path = args.o
+    target_path = args.t
+
+    verbose = args.v
+    print(origin_path)
+    print(target_path)
+
+    print(verbose)
 if __name__ == '__main__':
     main()
