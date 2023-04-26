@@ -145,8 +145,8 @@ def main():
                         f"cp -r {origin_path}/{patient_folder}/{record_date}/{dicom_folder_name}/ {target_path}/dicom/{pseudonym_number}/{record_date_iso}/dicom")
             number_dicoms += 1
 
-    list_niftis = ["T2ax.nii", "t1_3d.nii", "flair_ax.nii"]
-    niffis_count = {"T2ax.nii": 0, "t1_3d.nii": 0, "flair_ax.nii": 0}
+    list_niftis = ["t2ax.nii", "t1_3d.nii", "flair_ax.nii"]
+    niffis_count = {"t2ax.nii": 0, "t1_3d.nii": 0, "flair_ax.nii": 0}
     for patient_folder_and_pseudonym in patient_folders_and_pseudonyms:
 
         patient_folder = patient_folder_and_pseudonym[0]

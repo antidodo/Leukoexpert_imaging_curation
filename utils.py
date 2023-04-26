@@ -66,3 +66,5 @@ def check_if_text_is_a_date_and_output_in_isofromat(date: str) -> str:
     # convert to iso formatted date
     date_iso = date_iso[:4] + "-" + date_iso[4:6] + "-" + date_iso[6:8]
     return date_iso
+
+
