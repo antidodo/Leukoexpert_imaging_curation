@@ -1,5 +1,6 @@
 import argparse
 import os
+import pandas as pd
 from utils_anomisation import get_list_of_folders , replace_descrip_nifty, mkdir_when_not_existent, get_list_of_files
 
 def main():
@@ -16,9 +17,9 @@ def main():
     """
     parser = argparse.ArgumentParser(description='Curation of Mris')
     parser.add_argument('-o', type=str, help='the path to the origin folder', required=True)
-    parser.add_argument('-t', type=str, help='the path to the target folder', required=True)
-    parser.add_argument('-i', type=str, help='inplace', default=True, required=False)
-    parser.add_argument('-v', type=bool, help='verbose', default=False, required=False)
+    parser.add_argument('-t', type=str, help='the path to the target folder',default= None, required=False)
+    parser.add_argument('-i',action='store_true' ,help='inplace')
+    parser.add_argument('-v',action='store_true' ,help='verbose')
 
 
     args = parser.parse_args()
@@ -29,7 +30,11 @@ def main():
     if verbose:
         print(f"origin_path: {origin_path}")
         print(f"target_path: {target_path}")
+        print(f"inplace: {inplace}")
         print(f"verbose: {verbose}")
+    # initilize a pandas dataframe for logging the changes made
+    logs = pd.DataFrame(columns=["old_descrip", "pseudonym", "path"])
+
     # use the folder name as pseudonym
     list_of_pseudonym = get_list_of_folders(origin_path)
     # iterate of all the pseudonyms
@@ -46,13 +51,16 @@ def main():
 
                 if inplace:
                     print("inplace")
-                    replace_descrip_nifty(input_path = path_of_image,pseudonym = pseudonym , inplace = inplace, verbose = verbose)
+                    describe, pseudonym = replace_descrip_nifty(input_path = path_of_image,pseudonym = pseudonym , inplace = inplace, verbose = verbose)
                 else:
                     print("not inplace")
-                    path_of_image_target = os.path.join(target_path,pseudonym,imaging_date,path_of_image)
-                    mkdir_when_not_existent(path_of_image_target)
-                    replace_descrip_nifty(input_path = path_of_image,output_path = path_of_image_target,pseudonym = pseudonym , inplace = inplace, verbose = verbose)
+                    path_of_image_folder_target = os.path.join(target_path,pseudonym,imaging_date)
+                    path_of_image_target = os.path.join(target_path,pseudonym,imaging_date,image)
+                    mkdir_when_not_existent(path_of_image_folder_target)
+                    describe, pseudonym = replace_descrip_nifty(input_path = path_of_image,output_path = path_of_image_target,pseudonym = pseudonym , inplace = inplace, verbose = verbose)
+                logs = pd.concat([logs, pd.DataFrame([{"old_descrip": describe, "pseudonym": pseudonym, "path": path_of_image}]) ], ignore_index=True)
 
-
+    # save the logs
+    logs.to_csv(os.path.join(origin_path,"Change_logs.csv"), index=False)
 if __name__ == '__main__':
     main()

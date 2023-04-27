@@ -54,4 +54,4 @@ def mkdir_when_not_existent(path: str) -> None:
     :return:
     """
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
