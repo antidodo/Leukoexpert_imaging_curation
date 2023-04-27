@@ -50,15 +50,15 @@ def main():
                 path_of_image = os.path.join(path_of_images,image)
 
                 if inplace:
-                    print("inplace")
                     describe, pseudonym = replace_descrip_nifty(input_path = path_of_image,pseudonym = pseudonym , inplace = inplace, verbose = verbose)
+                    logs = pd.concat([logs, pd.DataFrame(
+                        [{"old_descrip": describe, "pseudonym": pseudonym, "path": path_of_image}])], ignore_index=True)
                 else:
-                    print("not inplace")
                     path_of_image_folder_target = os.path.join(target_path,pseudonym,imaging_date)
                     path_of_image_target = os.path.join(target_path,pseudonym,imaging_date,image)
                     mkdir_when_not_existent(path_of_image_folder_target)
                     describe, pseudonym = replace_descrip_nifty(input_path = path_of_image,output_path = path_of_image_target,pseudonym = pseudonym , inplace = inplace, verbose = verbose)
-                logs = pd.concat([logs, pd.DataFrame([{"old_descrip": describe, "pseudonym": pseudonym, "path": path_of_image}]) ], ignore_index=True)
+                    logs = pd.concat([logs, pd.DataFrame([{"old_descrip": describe, "pseudonym": pseudonym, "path": path_of_image_target}]) ], ignore_index=True)
 
     # save the logs
     logs.to_csv(os.path.join(origin_path,"Change_logs.csv"), index=False)

@@ -1,7 +1,6 @@
 import nibabel as nib
-from nibabel.testing import data_path
 import os
-import numpy as np
+
 
 def replace_descrip_nifty(input_path: str, output_path: str = None,pseudonym:str = None, inplace: bool = False, verbose: bool = False) -> [str,str]:
     """
