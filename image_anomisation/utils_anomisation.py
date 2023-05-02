@@ -1,6 +1,6 @@
 import nibabel as nib
 import os
-
+from numpy.linalg import LinAlgError
 
 def replace_descrip_nifty(input_path: str, output_path: str = None,pseudonym:str = None, inplace: bool = False, verbose: bool = False) -> [str,str]:
     """
@@ -19,13 +19,21 @@ def replace_descrip_nifty(input_path: str, output_path: str = None,pseudonym:str
     describe = img.header["descrip"]
     img.header["descrip"] = pseudonym
     if inplace:
-        nib.save(img, input_path)
+        try:
+            nib.save(img, input_path)
+        except LinAlgError as e:
+            print(f"error: {e} at path: {input_path}")
+            print(f"the file will not be saved")
         if verbose:
             print(f" save file to path: {input_path}")
     else:
         if output_path is None:
             raise ValueError("output path is None, you need a output path if inplace is false")
-        nib.save(img, output_path)
+        try:
+            nib.save(img, output_path)
+        except LinAlgError as e:
+            print(f"error: {e} at path: {input_path}")
+            print(f"the file will not be saved")
         if verbose:
             print(f" save file to path: {input_path}")
     return describe, pseudonym
