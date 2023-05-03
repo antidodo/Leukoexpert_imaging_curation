@@ -18,6 +18,8 @@ def replace_descrip_nifty(input_path: str, output_path: str = None,pseudonym:str
         print(f" load file at: {input_path}")
     describe = img.header["descrip"]
     img.header["descrip"] = pseudonym
+    db_name = img.header["db_name"]
+    img.header["db_name"] = pseudonym
     if inplace:
         try:
             nib.save(img, input_path)
@@ -36,7 +38,7 @@ def replace_descrip_nifty(input_path: str, output_path: str = None,pseudonym:str
             print(f"the file will not be saved")
         if verbose:
             print(f" save file to path: {input_path}")
-    return describe, pseudonym
+    return describe, pseudonym , db_name
 
 def get_list_of_folders(path: str) -> list:
     """
