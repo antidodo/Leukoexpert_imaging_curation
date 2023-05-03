@@ -1,6 +1,6 @@
 import os
 import shutil
-
+import gzip
 
 def copy_files(source_folder, target_folder):
     """Copy all files in subdirectories of source_folder to target_folder."""
@@ -11,7 +11,8 @@ def copy_files(source_folder, target_folder):
             new_filename = subfolder_name + "&" + filename
             dst = os.path.join(target_folder, new_filename)
             shutil.copyfile(src, dst)
-
+            # compress to .gz at target_folder
+            g
             #shutil.copyfile(src, dst)
 
 
